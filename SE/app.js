@@ -2,83 +2,45 @@ const exp = require("express");
 const app = exp();
 const Paper = require('./paper').Paper;
 const Event = require('./event').Event;
-const Reviewee = require('./reviewee').Reviewee;
-const Reviewer = require('./reviewer').Reviewer;
+
 const Attends = require('./attends').Attends;
-const Attendee = require('./attendee').Attendee;
-const passport = require('./passport');
+
+const passport_reviewer = require('./passport_reviewer').passport;
+const reviewer = require('./routes/reviewer').route
+// const reviewee = require('./routes/reviewee').route      jab passport_reviewer_reviewee and passport_reviewer_attendee ban jaaye tab inka comment hata dena           
+// const attendee = require('./routes/attendee').route
 
 const session = require('express-session');
 
 app.use(exp.json())
 app.use(exp.urlencoded({extended:true}))
 
-// app.use(session({
-//     secret : 'qwertyuiop',
-//     resave: false,
-//     saveUninitialized: true,
-// }));
 
-// app.get('/',(req,res)=>{
-//     res.send('HELLO WORLD');
-// });
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport_reviewer.initialize())
+app.use(passport_reviewer.session())
+
+app.use(session({
+    secret : 'qwertyuiop',
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.use('/reviewer',reviewer)
+// app.use('/reviewee',reviewee)   jab passport_reviewer_reviewee and passport_reviewer_attendee ban jaaye tab inka comment hata dena
+// app.use('/attendee',attendee)
 
 
 app.use('/',exp.static(__dirname + '/public'));
+
 app.use('/loginReviewer',exp.static(__dirname + '/public/loginReviewer.html'));
+app.use('/signupReviewer',exp.static(__dirname + '/public/signupReviewer.html'));
 
-app.post('/signUpReviewer',function(req,res){
-    console.log(req.body)
-    Reviewer.create({
-        emailId: req.body.emailId,
-        reviewerFirstName: req.body.firstName,
-        reviewerLastName: req.body.lastName,
-        reviewerOrganisation : req.body.organization,
-        reviewerDesignation : req.body.designation,
-        password : req.body.password,
-        words : 0
-    }).
-    then(res.send("SUCCESS"))
-    .catch((err)=>{
-        res.send(err)
-    })
-});
+app.use('/loginReviewee',exp.static(__dirname + '/public/loginReviewee.html'));
+app.use('/signupReviewee',exp.static(__dirname + '/public/signupReviewee.html'));
 
-app.post('/signUpReviewee',function(req,res){
-    console.log(req.body)
-    Reviewee.create({
-        emailId: req.body.emailId,
-        revieweeFirstName: req.body.firstName,
-        revieweeLastName: req.body.lastName,
-        revieweeOrganisation : req.body.organization,
-        revieweeDesignation : req.body.designation,
-        password : req.body.password
-    }).
-    then(res.send("SUCCESS"))
-    .catch((err)=>{
-        res.send(err)
-    })
-});
+app.use('/loginAttendee',exp.static(__dirname + '/public/loginAttendee.html'));
+app.use('/signupAttendee',exp.static(__dirname + '/public/signupAttendee.html'));
 
-app.post('/signUpAttendee',function(req,res){
-    console.log(req.body)
-    Attendee.create({
-        emailId: req.body.emailId,
-        attendeeFirstName: req.body.firstName,
-        attendeeLastName: req.body.lastName,
-        password : req.body.password
-    }).
-    then(res.send("SUCCESS"))
-    .catch((err)=>{
-        res.send(err)
-    })
-});
-
-app.post('/loginReviewers', (req,res) => passport.authenticate('local', { successRedirect: '/', failureRedirect: '/loginReviewer', })(req,res));
-
-
-app.listen(5500,()=>{
+app.listen(7891,()=>{
     console.log('Server Started!!');
 });

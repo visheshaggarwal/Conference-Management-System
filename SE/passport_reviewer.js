@@ -2,14 +2,18 @@ const passport = require('passport');
 const strategy = require('passport-local').Strategy;
 const Reviewer = require('./reviewer').Reviewer;
 
-passport.use(new strategy(
+passport.use(new strategy( {
+        usernameField: 'emailId',
+        passwordField: 'password'
+    },
     function(emailId,password,done){
-        // console.log(username,password);
+        console.log('nahi aaya is baar bhi')
         Reviewer.findOne({
             where : {
                 emailId : emailId
             }
-        }).then((user)=>{
+        })
+        .then((user)=>{
             if(!user){
                 console.log('You havent signed up buddy!!');
                 return done(null,false,{message : 'Incorrect UserName'});
@@ -18,16 +22,22 @@ passport.use(new strategy(
                 console.log('MisMatch!\nTry Again!!');
                 return done(null,false,{message : 'Incorrect Password'});
             }
-             done(null,user);
-        }).catch(done)
+            user.part = 'reviewer'      //aise hi attendee me dalna attendee and reviewee me reviewee
+            console.log(user)
+            return done(null,user)
+        })
+        .catch(done)
     }
 ));
 
-passport.serializeUser(function(reviewer,done){
-    done(null,reviewer.emailId);
-});
+passport.serializeUser(
+    function(reviewer,done){
+        done(null,reviewer.emailId);
+    }
+);
 
-passport.deserializeUser(function(emailId,done){
+passport.deserializeUser(
+    function(emailId,done){
     Reviewer.findOne({
          where : { emailId : emailId }
     }).then((user)=>{
@@ -40,4 +50,4 @@ passport.deserializeUser(function(emailId,done){
     });
 });
 
-module.exports = passport;
+module.exports = {passport}
