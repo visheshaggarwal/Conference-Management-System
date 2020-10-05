@@ -42,6 +42,4 @@ route.get('/logout', function(req, res){
     res.redirect('/');   // ye dekh liyo kahan redirect karna hai tune logout ke baad
 });
 
-
-
 module.exports = {route}

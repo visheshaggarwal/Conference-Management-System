@@ -2,13 +2,14 @@ const exp = require("express");
 const app = exp();
 const Paper = require('./paper').Paper;
 const Event = require('./event').Event;
-
 const Attends = require('./attends').Attends;
 
 const passport_reviewer = require('./passport_reviewer').passport;
+const passport_reviewee = require('./passport_reviewee').passport;
+const passport_attendee = require('./passport_attendee').passport;
 const reviewer = require('./routes/reviewer').route
-// const reviewee = require('./routes/reviewee').route      jab passport_reviewer_reviewee and passport_reviewer_attendee ban jaaye tab inka comment hata dena           
-// const attendee = require('./routes/attendee').route
+const attendee = require('./routes/attendee').route
+const reviewee = require('./routes/reviewee').route  
 
 const session = require('express-session');
 
@@ -19,6 +20,12 @@ app.use(exp.urlencoded({extended:true}))
 app.use(passport_reviewer.initialize())
 app.use(passport_reviewer.session())
 
+app.use(passport_reviewee.initialize())
+app.use(passport_reviewee.session())
+
+app.use(passport_attendee.initialize())
+app.use(passport_attendee.session())
+
 app.use(session({
     secret : 'qwertyuiop',
     resave: false,
@@ -26,8 +33,9 @@ app.use(session({
 }));
 
 app.use('/reviewer',reviewer)
-// app.use('/reviewee',reviewee)   jab passport_reviewer_reviewee and passport_reviewer_attendee ban jaaye tab inka comment hata dena
-// app.use('/attendee',attendee)
+app.use('/attendee',attendee)
+app.use('/reviewee',reviewee)  
+
 
 
 app.use('/',exp.static(__dirname + '/public'));
