@@ -23,10 +23,13 @@ route.post('/signUp',function(req,res){
 
 // ------------------------ Login Handler ----------------------//
 
-route.post('/login',passport.authenticate('local',{
-    failureRedirect:'/root/login',
-    successRedirect:'/'
-}))
+route.post('/login',
+    passport.authenticate('local',{failureRedirect:'/loginAttendee'}),
+    function(req,res){
+        console.log("Logging In : " + req.user.attendeeFirstName);
+        return res.redirect("/");
+    }
+);
 
 //------------------------Logout Handler-----------------------//
 

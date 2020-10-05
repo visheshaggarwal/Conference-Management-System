@@ -1,10 +1,10 @@
 const route = require('express').Router()
 const Reviewee = require('../reviewee').Reviewee
-const passport = require('../passport_attendee')
+const passport = require('../passport_reviewee')
 
 //--------------------- Signup Handler --------------------------//
 route.get('/',function(req,res){
-    res.redirect('/signupAttendee')    // ye banana hai tujhe
+    res.redirect('/signupReviewee')    // ye banana hai tujhe
 })
 
 route.post('/signUp',function(req,res){
@@ -25,10 +25,13 @@ route.post('/signUp',function(req,res){
 
 // ------------------------ Login Handler ----------------------//
 
-route.post('/login',passport.authenticate('local',{
-    failureRedirect:'/root/login',
-    successRedirect:'/'
-}))
+route.post('/login',
+    passport.authenticate('local',{failureRedirect:'/loginReviewee'}),
+    function(req,res){
+        console.log("Logging In : " + req.user.revieweeFirstName);
+        return res.redirect("/");
+    }
+);
 
 //------------------------Logout Handler-----------------------//
 

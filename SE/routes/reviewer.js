@@ -45,4 +45,3 @@ route.get('/logout', function(req, res){
 
 module.exports = {route}
 
-//get kahan hai login page ka?????
