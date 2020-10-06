@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="/login" method="POST" required>
+        <input type="text" name="emailId" placeholder="emailId" required> <br>
+        <input type="password" name="password" placeholder="pass" required>
+        <select name="loginAs" required>
+            <option value="attendee">Attendee</option>
+            <option value="reviewee">Reviewee</option>
+            <option value="reviewer">Reviewer</option>
+        </select>
+        <input type="submit">
+    </form>
+
+</body>
+</html>
