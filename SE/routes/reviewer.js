@@ -1,6 +1,7 @@
 const route = require('express').Router()
 const Reviewer = require('../reviewer').Reviewer
-const passport = require('../passport_reviewer').passport
+const loginDb = require('../loginDb').loginDb
+
 
 //--------------------- Signup Handler --------------------------//
 route.get('/',function(req,res){
@@ -8,39 +9,33 @@ route.get('/',function(req,res){
 })
 
 route.post('/signUp',function(req,res){
-    console.log(req.body)
-    Reviewer.create({
-        emailId: req.body.emailId,
-        reviewerFirstName: req.body.firstName,
-        reviewerLastName: req.body.lastName,
-        reviewerOrganisation : req.body.organization,
-        reviewerDesignation : req.body.designation,
-        password : req.body.password,
-        words : 0
-    })
-    .then(res.redirect('/loginReviewer'))
-    .catch((err)=>{
-        res.send(err)
-    })
-});
-
-
-// ------------------------ Login Handler ----------------------//
-
-route.post('/login',
-    passport.authenticate('local',{failureRedirect:'/loginReviewer'}),
-    function(req,res){
-        console.log("Logging In : " + req.user.reviewerFirstName);
-        return res.redirect("/reviewerPage");
-        // return res.redirect("/");
+    if(req.user) {
+        res.redirect('/logoutPrevSession')
+    } else {
+        Reviewer.create({
+            emailId: req.body.emailId,
+            reviewerFirstName: req.body.firstName,
+            reviewerLastName: req.body.lastName,
+            reviewerOrganisation : req.body.organization,
+            reviewerDesignation : req.body.designation,
+            password : req.body.password,
+            words : 0
+        })
+        .then(
+            loginDb.create({
+                emailId: req.body.emailId,
+                password : req.body.password,
+                loginAs: 'reviewer'
+            })
+            .then(res.redirect('/login'))    
+            .catch((err)=>{
+                res.send(err)
+            })
+        )
+        .catch((err)=>{
+            res.send(err)
+        })
     }
-);
-
-//------------------------Logout Handler-----------------------//
-
-route.get('/logout', function(req, res){
-    req.logout();
-    res.redirect('/');   // ye dekh liyo kahan redirect karna hai tune logout ke baad
 });
 
 module.exports = {route}

@@ -1,16 +1,20 @@
 const passport = require('passport');
 const strategy = require('passport-local').Strategy;
-const Reviewee = require('./reviewee').Reviewee;
+const loginDb = require('./loginDb').loginDb;
 
 passport.use(new strategy( {
         usernameField: 'emailId',
-        passwordField: 'password'
-    },
-    function(emailId,password,done){
-        console.log('nahi aaya is baar bhi')
-        Reviewee.findOne({
+        passwordField: 'password',
+        passReqToCallback: true
+      },
+    function(req,emailId,password,done){
+        if(req.user) {
+            return done(null,false,{message : 'Already Logged In'});
+        }
+        loginDb.findOne({
             where : {
-                emailId : emailId
+                emailId : emailId,
+                loginAs : req.body.loginAs
             }
         })
         .then((user)=>{
@@ -22,8 +26,7 @@ passport.use(new strategy( {
                 console.log('MisMatch!\nTry Again!!');
                 return done(null,false,{message : 'Incorrect Password'});
             }
-            user.part = 'reviewee'      //aise hi attendee me dalna attendee and reviewee me reviewee
-            console.log(user)
+            user.part = req.body.loginAs     
             return done(null,user)
         })
         .catch(done)
@@ -31,15 +34,17 @@ passport.use(new strategy( {
 ));
 
 passport.serializeUser(
-    function(reviewee,done){
-        done(null,reviewee.emailId);
+    function(loginDb,done){
+        done(null,loginDb.emailId);
     }
 );
 
 passport.deserializeUser(
     function(emailId,done){
-    Reviewee.findOne({
-         where : { emailId : emailId }
+    loginDb.findOne({
+         where : { 
+            emailId : emailId
+        }
     }).then((user)=>{
         if(!user){
             return done(new Error('No Such User'));

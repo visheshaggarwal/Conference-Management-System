@@ -1,47 +1,40 @@
 const route = require('express').Router()
 const Attendee = require('../attendee').Attendee
-const passport = require('../passport_attendee').passport
+const loginDb = require('../loginDb').loginDb
+
+
 
 //--------------------- Signup Handler --------------------------//
 route.get('/',function(req,res){
-    res.redirect('/signupAttendee')    // ye banana hai tujhe
+    res.redirect('/signupAttendee')   
 })
 
-// route.get('/attendeePage',function(req,res){
-//     res.redirect('/attendeePage')    // ye banana hai tujhe
-// })
-
-route.post('/signUp',function(req,res){
-    console.log(req.body)
-    Attendee.create({
-        emailId: req.body.emailId,
-        attendeeFirstName: req.body.firstName,
-        attendeeLastName: req.body.lastName,
-        password : req.body.password
-    }).
-    then(res.redirect('/loginAttendee'))    // ye bhi banana hai (html file public me bani hui hai, form bana diyo)
-    .catch((err)=>{
-        res.send(err)
-    })
-});
-
-// ------------------------ Login Handler ----------------------//
-
-route.post('/login',
-    passport.authenticate('local',{failureRedirect:'/loginAttendee'}),
-    function(req,res){
-        console.log("Logging In : " + req.user.attendeeFirstName);
-        return res.redirect("/attendeePage");
-        // return res.redirect("/");
+route.post('/signUp',function(req,res) {
+    if(req.user) {
+        res.redirect('/logoutPrevSession')
     }
-);
-
-//------------------------Logout Handler-----------------------//
-
-route.get('/logout', function(req, res){
-    req.logout();
-    res.redirect('/');   // ye dekh liyo kahan redirect karna hai tune logout ke baad
+    else {
+        Attendee.create({
+            emailId: req.body.emailId,
+            attendeeFirstName: req.body.firstName,
+            attendeeLastName: req.body.lastName,
+            password : req.body.password
+        })
+        .then(
+            loginDb.create({
+                emailId: req.body.emailId,
+                password : req.body.password,
+                loginAs: 'attendee'
+            })
+            .then(res.redirect('/login'))    
+            .catch((err)=>{
+                res.send(err)
+            })
+        )    
+        .catch((err)=>{
+            res.send(err)
+        })
+    }
 });
-
 
 module.exports = {route}
