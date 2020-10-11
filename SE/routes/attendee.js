@@ -7,6 +7,10 @@ route.get('/',function(req,res){
     res.redirect('/signupAttendee')    // ye banana hai tujhe
 })
 
+// route.get('/attendeePage',function(req,res){
+//     res.redirect('/attendeePage')    // ye banana hai tujhe
+// })
+
 route.post('/signUp',function(req,res){
     console.log(req.body)
     Attendee.create({
@@ -27,7 +31,8 @@ route.post('/login',
     passport.authenticate('local',{failureRedirect:'/loginAttendee'}),
     function(req,res){
         console.log("Logging In : " + req.user.attendeeFirstName);
-        return res.redirect("/");
+        return res.redirect("/attendeePage");
+        // return res.redirect("/");
     }
 );
 

@@ -6,11 +6,13 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "passport-local": "^1.0.0",
+    "formidable": "^1.2.2",
+    "fs": "0.0.1-security",
     "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "sequelize": "^6.3.5",
-    "sqlite3": "^5.0.0",
-    "sqlite": "^4.0.15"
+    "sqlite": "^4.0.15",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -31,7 +31,8 @@ route.post('/login',
     passport.authenticate('local',{failureRedirect:'/loginReviewer'}),
     function(req,res){
         console.log("Logging In : " + req.user.reviewerFirstName);
-        return res.redirect("/");
+        return res.redirect("/reviewerPage");
+        // return res.redirect("/");
     }
 );
 

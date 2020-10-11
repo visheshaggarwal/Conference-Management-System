@@ -10,6 +10,7 @@ const passport_attendee = require('./passport_attendee').passport;
 const reviewer = require('./routes/reviewer').route
 const attendee = require('./routes/attendee').route
 const reviewee = require('./routes/reviewee').route  
+const event = require('./routes/event').route 
 
 const session = require('express-session');
 
@@ -35,19 +36,26 @@ app.use(session({
 app.use('/reviewer',reviewer)
 app.use('/attendee',attendee)
 app.use('/reviewee',reviewee)  
-
-
+app.use('/event',event)
 
 app.use('/',exp.static(__dirname + '/public'));
 
+
+app.use('/addEvent',exp.static(__dirname + '/public/addEvent.html'));
+// app.use('/submitPaper',exp.static(__dirname + '/public/submitPaper.html'));
+
 app.use('/loginReviewer',exp.static(__dirname + '/public/loginReviewer.html'));
 app.use('/signupReviewer',exp.static(__dirname + '/public/signupReviewer.html'));
+app.use('/revieweePage',exp.static(__dirname + '/public/revieweePage.html'));
 
 app.use('/loginReviewee',exp.static(__dirname + '/public/loginReviewee.html'));
 app.use('/signupReviewee',exp.static(__dirname + '/public/signupReviewee.html'));
+app.use('/reviewerPage',exp.static(__dirname + '/public/reviewerPage.html'));
 
 app.use('/loginAttendee',exp.static(__dirname + '/public/loginAttendee.html'));
 app.use('/signupAttendee',exp.static(__dirname + '/public/signupAttendee.html'));
+app.use('/attendeePage',exp.static(__dirname + '/public/attendeePage.html'));
+
 
 app.listen(7891,()=>{
     console.log('Server Started!!');
