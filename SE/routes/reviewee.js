@@ -1,6 +1,18 @@
 const route = require('express').Router()
 const Reviewee = require('../reviewee').Reviewee
+const Reviewer = require('../reviewer').Reviewer
 const loginDb = require('../loginDb').loginDb
+const hooke = require("hookejs")
+var fs = require('fs');
+
+
+route.get('/revieweePage',function(req,res){
+    res.redirect('/revieweePage')    
+})
+
+route.get('/submitPaper',function(req,res){
+    res.redirect('/submitPaper')    
+})
 
 
 //--------------------- Signup Handler --------------------------//
@@ -37,6 +49,27 @@ route.post('/signUp',function(req,res){
             res.send(err)
         })
     }
+});
+
+route.post('/submitNewPaper',function(req,res){
+    console.log('In submit Paper reviewee')
+    
+    // File Saved
+    var fileName = 'Papers/' + req.body.topic + '.txt'
+    fs.appendFile(fileName, req.body.paper, function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+    });
+
+    // reviewerId = () => Reviewer.findOne({
+    //     attributes: ['reviewerId',[sequelize.fn('min', sequelize.col('words')), 'minPrice']],
+    //     raw: true,
+    // });
+    // console.log(minPrice)
+    // var minWords = async/await db.Reviewer.min('words')
+    // console.log(minWords)
+    res.redirect('revieweePage');
+
 });
 
 module.exports = {route}

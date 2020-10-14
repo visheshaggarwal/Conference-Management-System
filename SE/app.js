@@ -31,6 +31,7 @@ app.use('/event',event)
 app.use('/',exp.static(__dirname + '/public'));
 
 app.use('/addEvent',exp.static(__dirname + '/public/addEvent.html'));
+app.use('/submitPaper',exp.static(__dirname + '/public/submitPaper.html'));
 
 // --------------------Login Logout handler ---------------------------------------------//
 app.use('/login',exp.static(__dirname + '/public/login.html'));
@@ -38,6 +39,8 @@ app.use('/signupReviewer',exp.static(__dirname + '/public/signupReviewer.html'))
 app.use('/signupReviewee',exp.static(__dirname + '/public/signupReviewee.html'));
 app.use('/signupAttendee',exp.static(__dirname + '/public/signupAttendee.html'));
 app.use('/attendeePage',exp.static(__dirname + '/public/attendeePage.html'));
+app.use('/revieweePage',exp.static(__dirname + '/public/revieweePage.html'));
+app.use('/reviewerPage',exp.static(__dirname + '/public/reviewerPage.html'));
 
 
 app.post('/login',
