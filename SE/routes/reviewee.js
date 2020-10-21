@@ -1,19 +1,24 @@
 const route = require('express').Router()
 const Reviewee = require('../reviewee').Reviewee
 const Reviewer = require('../reviewer').Reviewer
+const Paper = require('../paper').Paper
 const loginDb = require('../loginDb').loginDb
 const hooke = require("hookejs")
 var fs = require('fs');
-
+var nodemailer = require('nodemailer');
+const sequelize = require('sequelize');
 
 route.get('/revieweePage',function(req,res){
     res.redirect('/revieweePage')    
 })
 
 route.get('/submitPaper',function(req,res){
-    res.redirect('/submitPaper')    
+    res.redirect('/submitPaper')   
 })
 
+route.get('/paperStatus',function(req,res){
+    res.redirect('/paperStatus')   
+})
 
 //--------------------- Signup Handler --------------------------//
 route.get('/',function(req,res){
@@ -61,15 +66,79 @@ route.post('/submitNewPaper',function(req,res){
         console.log('Saved!');
     });
 
-    // reviewerId = () => Reviewer.findOne({
-    //     attributes: ['reviewerId',[sequelize.fn('min', sequelize.col('words')), 'minPrice']],
-    //     raw: true,
-    // });
-    // console.log(minPrice)
-    // var minWords = async/await db.Reviewer.min('words')
-    // console.log(minWords)
+    Reviewer.findOne({
+        attributes: ['emailId','words',[sequelize.fn('min', sequelize.col('words')), 'minWords']],
+        raw: true,
+    }).then((val) => {
+        console.log(val.words,val.emailId)
+        let transport = nodemailer.createTransport({
+            service : "gmail",
+            host: 'smtp.gmail.com',
+            // port: 5500,
+            // tls: {
+            //     rejectUnauthorized: false
+            // }
+            auth: { 
+               user: 'visheshaggarwal2308@gmail.com',
+               pass: 'vish2308esh'
+            }
+        });
+        // console.log(req.body);
+        const message = {
+            from: 'noreply@seproject.com', // Sender address
+            to: val.emailId,  // List of recipients
+            subject: 'Paper Review', // Subject line
+            text : 'Please review ' + req.body.topic +' paper by ' + req.user.emailId, // Plain text body
+        };
+    
+        transport.sendMail(message, function(err, info) {
+            if (err) {
+            console.log(err)
+            } else {
+            console.log(info);
+            }
+        });
+        var str = req.body.paper
+        var totalSoFar = 0;
+        for (var i = 0; i < str.length; i++)
+            if (str[i] === " ") { // if a space is found in str
+                totalSoFar += 1; // add 1 to total so far
+            }
+        totalSoFar += 1;
+        console.log(totalSoFar)
+        Reviewer.update(
+            {words: val.words + totalSoFar},
+            {where : {emailId:val.emailId}}
+        ).then(() => {
+            console.log("UPDATED")
+            Paper.create({
+                topic:req.body.topic,
+                category:req.body.category,
+                date: req.body.date,
+                reviewerId: val.emailId,
+                revieweeId : req.user.emailId,
+                selected : 'PENDING',
+                paperId : fileName
+            }).then(() => {
+                console.log("Paper Created")
+            })
+        })
+    });
     res.redirect('revieweePage');
+});
 
+route.post('/paperStatusData',function(req,res){
+    Paper.findAll({
+        where : {
+            revieweeId : req.user.emailId
+        }
+    }).then((val) => {
+        // console.log(req.user)
+        // console.log(req.user.emailId)
+        // console.log(val)
+        console.log("paper status sent")
+        res.send(val)
+    }) 
 });
 
 module.exports = {route}

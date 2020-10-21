@@ -21,5 +21,4 @@ route.post('/addNewEvent',function(req,res){
     })
 });
 
-
 module.exports = {route}
